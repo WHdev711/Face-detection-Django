@@ -263,6 +263,9 @@ class EmployeeImage(TemplateView):
         print("hello this is face detection")
 
     def post(self, request, *args, **kwargs):
+        # Before save uploaded file, delete all file in media/images
+        for f in os.listdir(Target_DIR):
+            os.remove(os.path.join(Target_DIR, f))
         # verifyPhoto()
         form = EmployeeForm(request.POST, request.FILES)
 
