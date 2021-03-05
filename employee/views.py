@@ -7,9 +7,11 @@ from django.http import HttpResponse
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView
 from employee.forms import EmployeeForm
-
+from django.contrib.auth.decorators import login_required
+from django.utils.text import get_valid_filename
 from django.views.generic import DetailView
 from employee.models import Employee
+import accounts.views
 
 import face_recognition
 from PIL import Image, ImageDraw
@@ -261,7 +263,6 @@ class EmployeeImage(TemplateView):
     template_name = 'emp_image.html'
     def face_detection(self, request, *args, **kwargs):
         print("hello this is face detection")
-
     def post(self, request, *args, **kwargs):
         # Before save uploaded file, delete all file in media/images
         for f in os.listdir(Target_DIR):
@@ -271,10 +272,10 @@ class EmployeeImage(TemplateView):
 
         if form.is_valid():
             obj = form.save()
-            kind = filetype.guess(f"{Target_DIR}/{request.FILES['emp_image']}")
+            kind = filetype.guess(f"{Target_DIR}/{get_valid_filename(request.FILES['emp_image'])}")
             kindtype = kind.mime.split('/')[0]
             if kindtype == 'image':
-                unknown_image = face_recognition.load_image_file(f"{Target_DIR}/{request.FILES['emp_image']}")
+                unknown_image = face_recognition.load_image_file(f"{Target_DIR}/{get_valid_filename(request.FILES['emp_image'])}")
                 unknown_face_encoding = face_recognition.face_encodings(unknown_image)[0]
                 results = face_recognition.compare_faces(user_photo, unknown_face_encoding)
                 i = 0
@@ -289,14 +290,14 @@ class EmployeeImage(TemplateView):
                 if checkflag == False:
                     checkphotoname = "unknown"
                 # return HttpResponseRedirect(reverse_lazy('emp_image_display', kwargs={'data':checkphotoname,'pk': obj.id}))
-                return render(request,'emp_image.html',{'data':checkphotoname,'url': f"{Target_DIR}/{request.FILES['emp_image']}"})
+                return render(request,'emp_image.html',{'data':checkphotoname,'url': f"{Target_DIR}/{get_valid_filename(request.FILES['emp_image'])}"})
             elif kindtype == 'video':
-                return render(request,'emp_image.html',{'video_url': f"{Target_DIR}/{request.FILES['emp_image']}"})
+                return render(request,'emp_image.html',{'video_url': f"{Target_DIR}/{get_valid_filename(request.FILES['emp_image'])}"})
         context = self.get_context_data(form=form)
         return self.render_to_response(context)     
-
     def get(self, request, *args, **kwargs):
-        
+        if not request.user.is_authenticated:
+            return redirect('login')
         return self.post(request, *args, **kwargs)
 
 

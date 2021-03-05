@@ -16,12 +16,20 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 import employee
+import accounts
+import accounts.views
+
 
 from employee.views import EmployeeImage, EmpImageDisplay
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', EmployeeImage.as_view(), name='home'),
+    path('dashboard', EmployeeImage.as_view(), name='dashboard'),
+    path('register/', accounts.views.registerPage, name="register"),
+	path('login/', accounts.views.loginPage, name="login"),  
+	path('logout/', accounts.views.logoutUser, name="logout"),
+
+    path('', accounts.views.home, name="home"),
     path('digital_makeup/',employee.views.digital_makeup),
     path('find_face/',employee.views.find_face),
     path('face_recognition/',employee.views.face_recog),
