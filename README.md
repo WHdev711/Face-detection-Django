@@ -1,5 +1,5 @@
 # Face-detection-Django
-This is web app with Django and face_recognition 
+This is web app by used Django and face_recognition 
 
 Face_recognition library is based on this repo: https://github.com/ageitgey/face_recognition
 
