@@ -11,7 +11,8 @@ from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 from .models import *
-
+from .forms import OrderForm, CreateUserForm
+from .filters import OrderFilter
 
 def registerPage(request):
 	if request.user.is_authenticated:
